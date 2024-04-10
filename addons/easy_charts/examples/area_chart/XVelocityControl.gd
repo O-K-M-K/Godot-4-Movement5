@@ -1,5 +1,7 @@
 extends Control
 
+#Oh look a new feature is added
+
 @onready var chart: Chart = $VBoxContainer/Chart
 @export var player_path : NodePath
 @onready var Player := get_node(player_path)
