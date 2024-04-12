@@ -1,6 +1,6 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3]
 
-[ext_resource path="res://addons/easy_charts/utilities/containers/data_tooltip/data_tooltip.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://addons/easy_charts/utilities/containers/data_tooltip/data_tooltip.gd" id="1"]
 
 [sub_resource type="StyleBoxFlat" id=1]
 content_margin_left = 10.0

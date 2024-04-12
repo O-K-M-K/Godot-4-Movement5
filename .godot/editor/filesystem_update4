@@ -1,2 +1,4 @@
 res://World/World.tscn
-res://addons/easy_charts/examples/area_chart/XVelocityControl.gd
+res://Objects/Player/StateMachine.gd
+res://Objects/Player/NewPlayer.tscn
+res://Objects/Player/Movement2.gd

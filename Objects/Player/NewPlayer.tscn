@@ -1,7 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://cvboky6pqlyk0"]
+[gd_scene load_steps=11 format=3 uid="uid://btspycew4rr82"]
 
-[ext_resource type="Script" path="res://Player/Player.gd" id="1"]
-[ext_resource type="Script" path="res://Player/Sprite.gd" id="2"]
+[ext_resource type="Script" path="res://Objects/Player/Movement2.gd" id="1_t72t5"]
+[ext_resource type="Script" path="res://Objects/Player/Sprite.gd" id="2_hqygy"]
+[ext_resource type="Script" path="res://Objects/Player/StateMachine.gd" id="3_4y62f"]
+[ext_resource type="Script" path="res://Objects/Player/IDLE.gd" id="4_q4h2g"]
+[ext_resource type="Script" path="res://Objects/Player/XMovement.gd" id="5_ndw2w"]
 
 [sub_resource type="RectangleShape2D" id="2"]
 size = Vector2(32, 24)
@@ -52,14 +55,7 @@ _data = {
 z_index = 10
 collision_mask = 14
 floor_snap_length = 16.0
-script = ExtResource("1")
-acceleration = 4032.0
-turning_acceleration = 13440.0
-deceleration = 4480.0
-jump_force = 1200.0
-jump_cut = 0.4
-jump_gravity_max = 1000.0
-jump_hang_gravity_mult = 0.05
+script = ExtResource("1_t72t5")
 
 [node name="SquareCollisionShape" type="CollisionShape2D" parent="."]
 position = Vector2(0, -4)
@@ -79,7 +75,7 @@ shape = SubResource("1")
 
 [node name="Sprite" type="Node2D" parent="."]
 position = Vector2(0, 8)
-script = ExtResource("2")
+script = ExtResource("2_hqygy")
 player_path = NodePath("..")
 
 [node name="Polygon2D" type="Polygon2D" parent="Sprite"]
@@ -91,3 +87,15 @@ polygon = PackedVector2Array(-16, -16, -16, 16, 16, 16, 16, -16)
 libraries = {
 "": SubResource("AnimationLibrary_1lb64")
 }
+
+[node name="StateMachine" type="Node" parent="."]
+process_mode = 4
+script = ExtResource("3_4y62f")
+deafult_state_path = NodePath("Idle")
+character_body_path = NodePath("XMovement")
+
+[node name="Idle" type="Node" parent="StateMachine"]
+script = ExtResource("4_q4h2g")
+
+[node name="XMovement" type="Node" parent="StateMachine"]
+script = ExtResource("5_ndw2w")
