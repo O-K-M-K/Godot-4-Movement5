@@ -54,7 +54,6 @@ z_index = 10
 collision_mask = 14
 floor_snap_length = 16.0
 script = ExtResource("1_a854o")
-in_air_x_mult = 1.052
 
 [node name="SquareCollisionShape" type="CollisionShape2D" parent="."]
 position = Vector2(0, -4)
@@ -89,11 +88,3 @@ libraries = {
 
 [node name="StateMachine" type="Node" parent="."]
 script = ExtResource("3_ml48h")
-
-[node name="State" type="Label" parent="."]
-offset_left = -44.0
-offset_top = -47.0
-offset_right = 44.0
-offset_bottom = -24.0
-text = "Test"
-horizontal_alignment = 1

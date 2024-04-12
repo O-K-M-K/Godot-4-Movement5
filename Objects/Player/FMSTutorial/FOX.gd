@@ -1,11 +1,24 @@
 extends CharacterBody2D
-## This character controller was created with the intent of being a decent starting point for Platformers.
-## 
-## Instead of teaching the basics, I tried to implement more advanced considerations.
-## That's why I call it 'Movement 2'. This is a sequel to learning demos of similar a kind.
-## Beyond coyote time and a jump buffer I go through all the things listed in the following video:
-## https://www.youtube.com/watch?v=2S3g8CgBG1g
-## Except for separate air and ground acceleration, as I don't think it's necessary.
+
+var _velocity = Vector2(0,0)
+var dash_duration = 10
+
+var RUNSPEED = 340
+var DASHSPEED = 390
+var WALKSPEED = 200
+var GRAVITY = 1800
+var JUMPFORCE = 500
+var MAX_JUMPFORCE = 800
+var DOUBLEJUMPFORCE = 1000
+var MAXAIRSPEED = 300
+var AIR_ACCEL = 25
+var FALLSPEED = 60
+var FALLINGSPEED = 900
+var MAXFALLSPEED = 900
+var TRACTION = 40
+var ROLL_DISTANCE = 350
+var air_dodge_speed = 500
+var UP_B_LAUNCHSPEED = 700
 
 
 # BASIC MOVEMENT VARAIABLES ---------------- #
@@ -46,7 +59,6 @@ var jump_buffer_timer : float = 0
 var is_jumping := false
 # ----------------------------------- #
 
-var user_input : Dictionary
 
 @export_group("Spring Movement")
 @export var spring_velocity : float = 0.0 #velocity
@@ -66,54 +78,34 @@ var user_input : Dictionary
 
 @export_group("", "")
 
+@onready var states = $State
 
-func _ready() -> void:
+var frame = 0
+func updateframes(delta):
+	frame += 1
+
+func turn(direction):
+	var dir = 0
+	if direction:
+		dir = -1
+	else:
+		dir = 1
+	#$Sprite.set_flip_h(direction)
+
+func reset_frame():
+	frame = 0
+
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass 
+
+func _physics_process(delta):
 	pass
-# All iputs we want to keep track of
-func get_input() -> Dictionary:
-	return {
-		"x": int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left")),
-		"y": int(Input.is_action_pressed("ui_down")) - int(Input.is_action_pressed("ui_up")),
-		"just_jump": Input.is_action_just_pressed("jump") == true,
-		"jump": Input.is_action_pressed("jump") == true,
-		"released_jump": Input.is_action_just_released("jump") == true,
-		"spring" : Input.is_action_pressed("spring")
-	}
+	#$Frames.text = str(frame)
 
-
-func _physics_process(delta: float) -> void:
-	user_input = get_input()
-	x_movement(delta)
-	jump_logic(delta)
-	apply_gravity(delta)
-	
-	timers(delta)
-	move_and_slide()
-
-func _process(delta: float) -> void:
-	handle_spring(delta)
-
-func handle_spring(delta: float):
-	#target_pos = inital pos + distance
-	if user_input.spring:
-		spring(global_position.x, spring_velocity, init_x+100, zeta, omega, delta)
-
-func spring(current_pos, v, target_pos, zeta, omega, delta: float) -> void:
-		var f = 1.0 + 2.0 * delta * zeta * omega
-		var oo = omega * omega
-		var hoo = delta * oo
-		var hhoo = delta * hoo
-		var detInv = 1.0/(f+hhoo)
-		var detX = f * current_pos + delta * v + hhoo * target_pos
-		var detV = v + hoo * (target_pos - current_pos) 
-		global_position.x = detX * detInv
-		spring_velocity = detV * detInv
-		
-		
-		
-		
-
-func x_movement(delta: float) -> void:
+func x_movement(delta: float, user_input) -> void:
 	#if currently_flying:
 		#return
 	x_dir = user_input.x
@@ -139,26 +131,14 @@ func x_movement(delta: float) -> void:
 		velocity.x = lerp(velocity.x, velocity.x + movement, 0.12)
 	else:
 		velocity.x += movement
-		
-	set_direction(x_dir)
 
 
-func set_direction(hor_direction) -> void:
-	# This is purely for visuals
-	# Turning relies on the scale of the player
-	# To animate, only scale the sprite
-	if hor_direction == 0:
-		return
-	apply_scale(Vector2(hor_direction * face_direction, 1)) # flip
-	face_direction = hor_direction # remember direction
-
-
-func jump_logic(_delta: float) -> void:
+func jump_logic(_delta: float, user_input) -> void:
 	# Reset our jump requirements
 	if is_on_floor():
 		jump_coyote_timer = jump_coyote
 		is_jumping = false
-	if get_input()["just_jump"]:
+	if user_input["just_jump"]:
 		jump_buffer_timer = jump_buffer
 	
 	# Jump if grounded, there is jump input, and we aren't jumping already
@@ -173,19 +153,18 @@ func jump_logic(_delta: float) -> void:
 		velocity.y = -jump_force
 	
 	# We're not actually interested in checking if the player is holding the jump button
-#	if get_input()["jump"]:pass
+	#if user_input["jump"]:pass
 	
 	# Cut the velocity if let go of jump. This means our jumpheight is varaiable
 	# This should only happen when moving upwards, as doing this while falling would lead to
 	# The ability to studder our player mid falling
-	if get_input()["released_jump"] and velocity.y < 0:
+	if user_input["released_jump"] and velocity.y < 0:
 		velocity.y -= (jump_cut * velocity.y)
 	
 	# This way we won't start slowly descending / floating once hit a ceiling
 	# The value added to the treshold is arbritary,
 	# But it solves a problem where jumping into 
 	if is_on_ceiling(): velocity.y = jump_hang_treshold + 100.0
-
 
 func apply_gravity(delta: float) -> void:
 	var applied_gravity : float = 0
@@ -209,9 +188,9 @@ func apply_gravity(delta: float) -> void:
 	velocity.y += applied_gravity
 
 
+
 func timers(delta: float) -> void:
 	# Using timer nodes here would mean unnececary functions and node calls
 	# This way everything is contained in just 1 script with no node requirements
 	jump_coyote_timer -= delta
 	jump_buffer_timer -= delta
-

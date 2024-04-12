@@ -1,5 +1,6 @@
-VideoStreamPlayer
+Label
 Node
+VideoStreamPlayer
 Button
 CanvasLayer
 AnimatableBody2D

@@ -1,4 +1,11 @@
-res://World/World.tscn
-res://Objects/Player/StateMachine.gd
 res://Objects/Player/NewPlayer.tscn
+res://Objects/Player/StateMachine.gd
+res://Objects/Player/OldFSM/IDLE.gd
+res://Objects/Player/OldFSM/input.gd
+res://Objects/Player/OldFSM/SMa.gd
+res://Objects/Player/OldFSM/XMovement.gd
+res://World/World.tscn
+res://Objects/Player/FMSTutorial/StateMachine.gd
+res://Objects/Player/FMSTutorial/PlayerFSM.gd
+res://Objects/Player/FMSTutorial/FOX.gd
 res://Objects/Player/Movement2.gd
